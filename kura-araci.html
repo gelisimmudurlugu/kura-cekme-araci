@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kurumsal Kura Çekme Aracı</title>
+  <style>
+    :root {
+      --ink: #231f20;
+      --muted: #667085;
+      --line: #d0d5dd;
+      --panel: #ffffff;
+      --page: #f5f6f7;
+      --navy: #231f20;
+      --red: #ed1b2f;
+      --red-dark: #b51224;
+      --charcoal: #3b3b3f;
+      --gold: #8a6f3d;
+      --danger: #b42318;
+      --shadow: 0 14px 36px rgba(35, 31, 32, .08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(120deg, rgba(237, 27, 47, .045), transparent 30%),
+        linear-gradient(315deg, rgba(35, 31, 32, .045), transparent 34%),
+        var(--page);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    body {
+      min-width: 320px;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    header {
+      min-height: 86px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 18px clamp(22px, 4vw, 52px);
+      color: var(--ink);
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      position: relative;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      left: clamp(22px, 4vw, 52px);
+      right: clamp(22px, 4vw, 52px);
+      bottom: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--red), var(--red-dark));
+      border-radius: 999px 999px 0 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      display: block;
+      width: clamp(128px, 13vw, 170px);
+      height: auto;
+      max-height: 48px;
+      object-fit: contain;
+    }
+
+    main {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: clamp(16px, 2.6vw, 34px);
+      display: grid;
+      grid-template-columns: minmax(310px, 420px) minmax(0, 1fr);
+      gap: clamp(16px, 2.5vw, 28px);
+      align-items: stretch;
+    }
+
+    .panel, .stage {
+      background: #ffffff;
+      border: 1px solid rgba(208, 213, 221, .86);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 760;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      color: #344054;
+      font-size: .88rem;
+      font-weight: 680;
+    }
+
+    textarea, input, select {
+      width: 100%;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color .16s ease, box-shadow .16s ease;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 4px rgba(237, 27, 47, .12);
+    }
+
+    textarea {
+      min-height: 230px;
+      resize: vertical;
+      padding: 13px 14px;
+      line-height: 1.45;
+    }
+
+    input {
+      height: 44px;
+      padding: 0 12px;
+    }
+
+    select {
+      height: 44px;
+      padding: 0 38px 0 12px;
+      appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #667085 50%),
+        linear-gradient(135deg, #667085 50%, transparent 50%);
+      background-position:
+        calc(100% - 18px) 18px,
+        calc(100% - 12px) 18px;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .hint, .counter, .error {
+      font-size: .82rem;
+      line-height: 1.35;
+    }
+
+    .hint, .counter {
+      color: var(--muted);
+    }
+
+    .error {
+      min-height: 18px;
+      color: var(--danger);
+      font-weight: 650;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+
+    .btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 0 15px;
+      cursor: pointer;
+      font-weight: 720;
+      transition: transform .14s ease, background .14s ease, border-color .14s ease;
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      flex: 1 1 190px;
+      color: #ffffff;
+      background: var(--red);
+      border-color: var(--red-dark);
+    }
+
+    .btn-primary:hover {
+      background: var(--red-dark);
+    }
+
+    .btn-secondary {
+      color: #344054;
+      background: #ffffff;
+      border-color: var(--line);
+    }
+
+    .btn-secondary:hover {
+      border-color: #98a2b3;
+    }
+
+    .btn:disabled {
+      opacity: .52;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .stage {
+      min-height: 660px;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .stage-top {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 18px;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff, #fbfbfc);
+    }
+
+    .draw-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .meta-item {
+      min-width: 114px;
+      padding: 10px 12px;
+      text-align: center;
+      border: 1px solid #d6dce2;
+      border-radius: 6px;
+      background: #ffffff;
+      box-shadow: inset 0 3px 0 rgba(237, 27, 47, .88);
+    }
+
+    .meta-label {
+      display: block;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .meta-value {
+      display: block;
+      margin-top: 2px;
+      font-size: 1.15rem;
+      font-weight: 780;
+    }
+
+    .stage-body {
+      position: relative;
+      display: grid;
+      grid-template-rows: minmax(220px, .9fr) minmax(240px, 1fr);
+      gap: 0;
+      background:
+        linear-gradient(180deg, rgba(35, 31, 32, .035), rgba(255, 255, 255, 0) 36%),
+        #ffffff;
+    }
+
+    .spotlight {
+      position: relative;
+      padding: clamp(24px, 4vw, 48px);
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+      border-bottom: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .spotlight::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px solid rgba(35, 31, 32, .09);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .draw-label {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 760;
+      text-transform: uppercase;
+    }
+
+    .ticker {
+      width: min(720px, 100%);
+      min-height: 80px;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      color: var(--navy);
+      background: #f8fafc;
+      border: 1px solid #dbe2e8;
+      border-radius: 8px;
+      font-size: clamp(1.1rem, 2.1vw, 1.7rem);
+      line-height: 1.1;
+      font-weight: 780;
+      word-break: break-word;
+    }
+
+    .ticker.completed {
+      display: block;
+      min-height: 0;
+      padding: 14px;
+      text-align: left;
+      font-size: 1rem;
+      line-height: 1.35;
+      font-weight: 680;
+    }
+
+    .spotlight-winners {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .spotlight-winner {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border: 1px solid #e2e5e8;
+      border-radius: 6px;
+      background: #ffffff;
+    }
+
+    .spotlight-rank {
+      width: 32px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: var(--red);
+      border-radius: 5px;
+      font-size: .82rem;
+      font-weight: 760;
+    }
+
+    .spotlight-mail {
+      min-width: 0;
+      color: var(--ink);
+      font-weight: 720;
+      overflow-wrap: anywhere;
+    }
+
+    .progress-wrap {
+      width: min(720px, 100%);
+      height: 7px;
+      margin-top: 22px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e6e7e9;
+    }
+
+    .progress {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--red), var(--red-dark));
+      transition: width .1s linear;
+    }
+
+    .results {
+      padding: clamp(20px, 3vw, 30px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(16px, 2vw, 22px);
+      align-content: start;
+    }
+
+    .result-block {
+      min-width: 0;
+    }
+
+    .result-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .result-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 780;
+    }
+
+    .badge {
+      min-width: 38px;
+      height: 28px;
+      display: inline-grid;
+      place-items: center;
+      color: #ffffff;
+      background: var(--navy);
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 760;
+    }
+
+    .badge.alt {
+      background: var(--charcoal);
+    }
+
+    .winner-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .winner {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      min-height: 54px;
+      padding: 10px 12px;
+      background: #ffffff;
+      border: 1px solid #dbe2e8;
+      border-radius: 7px;
+    }
+
+    .rank {
+      width: 38px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: var(--red);
+      border-radius: 6px;
+      font-size: .88rem;
+      font-weight: 780;
+    }
+
+    .winner.backup .rank {
+      background: var(--charcoal);
+    }
+
+    .mail {
+      min-width: 0;
+      color: #1d2939;
+      font-size: clamp(.9rem, 1.4vw, 1.08rem);
+      font-weight: 680;
+      overflow-wrap: anywhere;
+    }
+
+    .empty {
+      min-height: 132px;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed #c7d0da;
+      border-radius: 7px;
+      background: #fbfcfd;
+      line-height: 1.35;
+    }
+
+    .confetti {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .piece {
+      position: absolute;
+      width: 9px;
+      height: 16px;
+      opacity: 0;
+      animation: fall 1.45s ease-in forwards;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-30px) rotate(0deg); opacity: 0; }
+      12% { opacity: .95; }
+      100% { transform: translateY(520px) rotate(260deg); opacity: 0; }
+    }
+
+    @media (max-width: 980px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .stage {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 680px) {
+      header {
+        min-height: 74px;
+      }
+
+      .grid-2, .results {
+        grid-template-columns: 1fr;
+      }
+
+      .stage-top {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .draw-meta {
+        justify-content: stretch;
+      }
+
+      .meta-item {
+        flex: 1 1 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <img class="brand-logo" src="oyak-logo.png" alt="OYAK">
+      </div>
+    </header>
+
+    <main>
+      <section class="panel" aria-label="Kura ayarları">
+        <h2 class="section-title">Kura Bilgileri</h2>
+
+        <div class="field">
+          <label for="participantType">Katılımcı türü</label>
+          <select id="participantType">
+            <option value="email">E-posta adresi</option>
+            <option value="name">Ad Soyad</option>
+            <option value="registry">Sicil no</option>
+            <option value="free">Serbest değer</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="emails" id="participantInputLabel">Katılımcı e-posta adresleri</label>
+          <textarea id="emails" spellcheck="false" placeholder="ornek1@firma.com&#10;ornek2@firma.com&#10;ornek3@firma.com"></textarea>
+          <div class="counter" id="emailCounter">0 geçerli benzersiz e-posta</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="winnerCount">Asıl kazanan sayısı</label>
+            <input id="winnerCount" type="number" min="1" step="1" value="3">
+          </div>
+          <div class="field">
+            <label for="backupCount">Yedek talihli sayısı</label>
+            <input id="backupCount" type="number" min="0" step="1" value="2">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="duration">Kura süresi, saniye</label>
+          <input id="duration" type="number" min="1" max="60" step="1" placeholder="7">
+          <div class="hint">Boş bırakılırsa kura 7 saniye sürer.</div>
+        </div>
+
+        <div class="error" id="errorBox" role="alert"></div>
+
+        <div class="toolbar">
+          <button class="btn btn-primary" id="drawBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Kurayı Başlat
+          </button>
+          <button class="btn btn-secondary" id="sampleBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Örnek Doldur
+          </button>
+          <button class="btn btn-secondary" id="resetBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Sıfırla
+          </button>
+        </div>
+      </section>
+
+      <section class="stage" aria-label="Kura sahnesi">
+        <div class="stage-top">
+          <div class="draw-meta" aria-label="Kura özeti">
+            <div class="meta-item">
+              <span class="meta-label">Katılımcı</span>
+              <span class="meta-value" id="metaParticipants">0</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Asıl</span>
+              <span class="meta-value" id="metaWinners">3</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Yedek</span>
+              <span class="meta-value" id="metaBackups">2</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-body">
+          <div class="spotlight">
+            <p class="draw-label" id="drawLabel">Kura beklemede</p>
+            <div class="ticker" id="ticker">Katılımcıları girip kurayı başlatın</div>
+            <div class="progress-wrap" aria-hidden="true">
+              <div class="progress" id="progress"></div>
+            </div>
+            <div class="confetti" id="confetti"></div>
+          </div>
+
+          <div class="results">
+            <div class="result-block">
+              <div class="result-head">
+                <h3 class="result-title">Asıl Kazananlar</h3>
+                <span class="badge" id="winnerBadge">0</span>
+              </div>
+              <ol class="winner-list" id="winnerList">
+                <li class="empty">Kura tamamlandığında asıl kazananlar burada gösterilir.</li>
+              </ol>
+            </div>
+
+            <div class="result-block">
+              <div class="result-head">
+                <h3 class="result-title">Yedek Talihliler</h3>
+                <span class="badge alt" id="backupBadge">0</span>
+              </div>
+              <ol class="winner-list" id="backupList">
+                <li class="empty">Kura tamamlandığında yedek talihliler burada gösterilir.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const els = {
+      emails: document.querySelector("#emails"),
+      participantType: document.querySelector("#participantType"),
+      participantInputLabel: document.querySelector("#participantInputLabel"),
+      winnerCount: document.querySelector("#winnerCount"),
+      backupCount: document.querySelector("#backupCount"),
+      duration: document.querySelector("#duration"),
+      drawBtn: document.querySelector("#drawBtn"),
+      sampleBtn: document.querySelector("#sampleBtn"),
+      resetBtn: document.querySelector("#resetBtn"),
+      emailCounter: document.querySelector("#emailCounter"),
+      errorBox: document.querySelector("#errorBox"),
+      metaParticipants: document.querySelector("#metaParticipants"),
+      metaWinners: document.querySelector("#metaWinners"),
+      metaBackups: document.querySelector("#metaBackups"),
+      drawLabel: document.querySelector("#drawLabel"),
+      ticker: document.querySelector("#ticker"),
+      progress: document.querySelector("#progress"),
+      winnerList: document.querySelector("#winnerList"),
+      backupList: document.querySelector("#backupList"),
+      winnerBadge: document.querySelector("#winnerBadge"),
+      backupBadge: document.querySelector("#backupBadge"),
+      confetti: document.querySelector("#confetti")
+    };
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const participantTypeConfig = {
+      email: {
+        label: "Katılımcı e-posta adresleri",
+        placeholder: "ornek1@firma.com\nornek2@firma.com\nornek3@firma.com",
+        singular: "e-posta",
+        splitPattern: /[\n,; \t]+/,
+        validate: value => emailPattern.test(value)
+      },
+      name: {
+        label: "Katılımcı ad soyad bilgileri",
+        placeholder: "Ayşe Demir\nMehmet Kaya\nElif Yılmaz",
+        singular: "ad soyad",
+        splitPattern: /[\n,;]+/,
+        validate: value => value.length > 1
+      },
+      registry: {
+        label: "Katılımcı sicil numaraları",
+        placeholder: "100245\n100387\n100492",
+        singular: "sicil no",
+        splitPattern: /[\n,; \t]+/,
+        validate: value => value.length > 0
+      },
+      free: {
+        label: "Katılımcı değerleri",
+        placeholder: "Katılımcı 1\nKatılımcı 2\nKatılımcı 3",
+        singular: "değer",
+        splitPattern: /[\n,;]+/,
+        validate: value => value.length > 0
+      }
+    };
+    let timer = null;
+    let drawing = false;
+
+    function getParticipantConfig() {
+      return participantTypeConfig[els.participantType.value] || participantTypeConfig.email;
+    }
+
+    function normalizeParticipant(value, type) {
+      const cleaned = value.trim().replace(/\s+/g, " ");
+      return type === "email" ? cleaned.toLowerCase() : cleaned;
+    }
+
+    function analyzeParticipants() {
+      const type = els.participantType.value;
+      const config = getParticipantConfig();
+      const raw = els.emails.value
+        .split(config.splitPattern)
+        .map(item => normalizeParticipant(item, type))
+        .filter(Boolean);
+      const participants = [];
+      const seen = new Set();
+      let duplicateCount = 0;
+      let invalidCount = 0;
+
+      raw.forEach(participant => {
+        const uniqueKey = type === "email" ? participant : participant.toLocaleLowerCase("tr-TR");
+        if (!config.validate(participant)) {
+          invalidCount += 1;
+          return;
+        }
+        if (seen.has(uniqueKey)) {
+          duplicateCount += 1;
+          return;
+        }
+        seen.add(uniqueKey);
+        participants.push(participant);
+      });
+
+      return {
+        duplicateCount,
+        invalidCount,
+        participants,
+        rawCount: raw.length,
+        typeLabel: config.singular
+      };
+    }
+
+    function parseEmails() {
+      return analyzeParticipants().participants;
+    }
+
+    function getSettings() {
+      const participantStats = analyzeParticipants();
+      return {
+        participantStats,
+        participants: participantStats.participants,
+        winners: Math.max(0, Number.parseInt(els.winnerCount.value, 10) || 0),
+        backups: Math.max(0, Number.parseInt(els.backupCount.value, 10) || 0),
+        duration: Math.min(60, Math.max(1, Number.parseInt(els.duration.value, 10) || 7))
+      };
+    }
+
+    function updateMeta() {
+      const settings = getSettings();
+      const stats = settings.participantStats;
+      const details = [];
+      if (stats.rawCount !== settings.participants.length) details.push(`${stats.rawCount} giriş`);
+      if (stats.duplicateCount) details.push(`${stats.duplicateCount} tekrar`);
+      if (stats.invalidCount) details.push(`${stats.invalidCount} geçersiz`);
+      els.emailCounter.textContent = details.length
+        ? `${settings.participants.length} geçerli benzersiz ${stats.typeLabel} (${details.join(", ")})`
+        : `${settings.participants.length} geçerli benzersiz ${stats.typeLabel}`;
+      els.metaParticipants.textContent = settings.participants.length;
+      els.metaWinners.textContent = settings.winners;
+      els.metaBackups.textContent = settings.backups;
+    }
+
+    function updateParticipantTypeView() {
+      const config = getParticipantConfig();
+      els.participantInputLabel.textContent = config.label;
+      els.emails.placeholder = config.placeholder;
+      updateMeta();
+    }
+
+    function validate(settings) {
+      if (!settings.participants.length) return `En az bir geçerli ${settings.participantStats.typeLabel} girin.`;
+      if (settings.winners < 1) return "Asıl kazanan sayısı en az 1 olmalıdır.";
+      if (settings.backups < 0) return "Yedek talihli sayısı 0 veya daha yüksek olmalıdır.";
+      if (settings.winners + settings.backups > settings.participants.length) {
+        return "Asıl ve yedek toplamı katılımcı sayısından fazla olamaz.";
+      }
+      return "";
+    }
+
+    function secureShuffle(items) {
+      const copy = [...items];
+      const random = new Uint32Array(1);
+      for (let index = copy.length - 1; index > 0; index -= 1) {
+        crypto.getRandomValues(random);
+        const swapIndex = random[0] % (index + 1);
+        [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+      }
+      return copy;
+    }
+
+    function createRandomTickerPool(participants) {
+      let pool = [];
+      return () => {
+        if (!pool.length) {
+          pool = secureShuffle(participants);
+        }
+        return pool.pop();
+      };
+    }
+
+    function maskParticipant(participant) {
+      if (!participant.includes("@")) return participant;
+      const [name, domain] = participant.split("@");
+      const visible = name.length <= 2 ? name[0] || "*" : `${name.slice(0, 2)}${"*".repeat(Math.min(5, name.length - 2))}`;
+      return `${visible}@${domain}`;
+    }
+
+    function renderList(target, entries, type) {
+      target.innerHTML = "";
+      if (!entries.length) {
+        const empty = document.createElement("li");
+        empty.className = "empty";
+        empty.textContent = type === "backup" ? "Yedek talihli seçilmedi." : "Asıl kazanan seçilmedi.";
+        target.appendChild(empty);
+        return;
+      }
+      entries.forEach((email, index) => {
+        const item = document.createElement("li");
+        item.className = `winner ${type === "backup" ? "backup" : ""}`;
+        item.innerHTML = `<span class="rank">${index + 1}</span><span class="mail"></span>`;
+        item.querySelector(".mail").textContent = email;
+        target.appendChild(item);
+      });
+    }
+
+    function renderSpotlightWinners(winners) {
+      els.ticker.innerHTML = "";
+      els.ticker.classList.add("completed");
+      const list = document.createElement("ol");
+      list.className = "spotlight-winners";
+      winners.forEach((email, index) => {
+        const item = document.createElement("li");
+        item.className = "spotlight-winner";
+        const rank = document.createElement("span");
+        rank.className = "spotlight-rank";
+        rank.textContent = index + 1;
+        const mail = document.createElement("span");
+        mail.className = "spotlight-mail";
+        mail.textContent = email;
+        item.append(rank, mail);
+        list.appendChild(item);
+      });
+      els.ticker.appendChild(list);
+    }
+
+    function setInitialResults() {
+      renderList(els.winnerList, [], "winner");
+      renderList(els.backupList, [], "backup");
+      els.winnerBadge.textContent = "0";
+      els.backupBadge.textContent = "0";
+    }
+
+    function launchConfetti() {
+      els.confetti.innerHTML = "";
+      const colors = ["#ed1b2f", "#231f20", "#8a6f3d", "#667085", "#f5f6f7"];
+      for (let i = 0; i < 52; i += 1) {
+        const piece = document.createElement("span");
+        piece.className = "piece";
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.top = `${Math.random() * 18}%`;
+        piece.style.background = colors[i % colors.length];
+        piece.style.animationDelay = `${Math.random() * .45}s`;
+        piece.style.transform = `rotate(${Math.random() * 180}deg)`;
+        els.confetti.appendChild(piece);
+      }
+      setTimeout(() => {
+        els.confetti.innerHTML = "";
+      }, 2200);
+    }
+
+    function finishDraw(selection, settings) {
+      const winners = selection.slice(0, settings.winners);
+      const backups = selection.slice(settings.winners, settings.winners + settings.backups);
+      renderList(els.winnerList, winners, "winner");
+      renderList(els.backupList, backups, "backup");
+      els.winnerBadge.textContent = winners.length;
+      els.backupBadge.textContent = backups.length;
+      els.drawLabel.textContent = "Asıl kazananlar";
+      renderSpotlightWinners(winners);
+      els.progress.style.width = "100%";
+      els.drawBtn.disabled = false;
+      drawing = false;
+      launchConfetti();
+    }
+
+    function startDraw() {
+      if (drawing) return;
+      const settings = getSettings();
+      const validationError = validate(settings);
+      els.errorBox.textContent = validationError;
+      if (validationError) return;
+
+      drawing = true;
+      els.drawBtn.disabled = true;
+      els.drawLabel.textContent = "Kura çekiliyor";
+      els.ticker.classList.remove("completed");
+      setInitialResults();
+      updateMeta();
+
+      const selection = secureShuffle(settings.participants);
+      const nextTickerEmail = createRandomTickerPool(settings.participants);
+      const startedAt = performance.now();
+      const durationMs = settings.duration * 1000;
+      clearInterval(timer);
+
+      timer = setInterval(() => {
+        const elapsed = performance.now() - startedAt;
+        const progress = Math.min(100, (elapsed / durationMs) * 100);
+        els.progress.style.width = `${progress}%`;
+        els.ticker.textContent = maskParticipant(nextTickerEmail());
+
+        if (elapsed >= durationMs) {
+          clearInterval(timer);
+          finishDraw(selection, settings);
+        }
+      }, 95);
+    }
+
+    function reset() {
+      clearInterval(timer);
+      drawing = false;
+      els.drawBtn.disabled = false;
+      els.errorBox.textContent = "";
+      els.drawLabel.textContent = "Kura beklemede";
+      els.ticker.classList.remove("completed");
+      els.ticker.textContent = "Katılımcıları girip kurayı başlatın";
+      els.progress.style.width = "0%";
+      els.confetti.innerHTML = "";
+      setInitialResults();
+      updateMeta();
+    }
+
+    function fillSample() {
+      const samples = {
+        email: [
+          "ayse.demir@firma.com",
+          "mehmet.kaya@firma.com",
+          "elif.yilmaz@firma.com",
+          "can.arslan@firma.com",
+          "deniz.celik@firma.com",
+          "selin.oz@firma.com",
+          "murat.akin@firma.com",
+          "zeynep.sahin@firma.com",
+          "burak.tan@firma.com",
+          "naz.eren@firma.com"
+        ],
+        name: [
+          "Ayşe Demir",
+          "Mehmet Kaya",
+          "Elif Yılmaz",
+          "Can Arslan",
+          "Deniz Çelik",
+          "Selin Öz",
+          "Murat Akın",
+          "Zeynep Şahin",
+          "Burak Tan",
+          "Naz Eren"
+        ],
+        registry: [
+          "100245",
+          "100387",
+          "100492",
+          "100516",
+          "100638",
+          "100704",
+          "100819",
+          "100936",
+          "101044",
+          "101128"
+        ],
+        free: [
+          "Katılımcı 1",
+          "Katılımcı 2",
+          "Katılımcı 3",
+          "Katılımcı 4",
+          "Katılımcı 5",
+          "Katılımcı 6",
+          "Katılımcı 7",
+          "Katılımcı 8",
+          "Katılımcı 9",
+          "Katılımcı 10"
+        ]
+      };
+      els.emails.value = samples[els.participantType.value].join("\n");
+      els.winnerCount.value = 3;
+      els.backupCount.value = 2;
+      els.duration.value = "";
+      reset();
+    }
+
+    ["input", "change"].forEach(eventName => {
+      els.emails.addEventListener(eventName, updateMeta);
+      els.participantType.addEventListener(eventName, updateParticipantTypeView);
+      els.winnerCount.addEventListener(eventName, updateMeta);
+      els.backupCount.addEventListener(eventName, updateMeta);
+    });
+
+    els.drawBtn.addEventListener("click", startDraw);
+    els.sampleBtn.addEventListener("click", fillSample);
+    els.resetBtn.addEventListener("click", reset);
+    updateParticipantTypeView();
+    setInitialResults();
+  </script>
+</body>
+</html>
